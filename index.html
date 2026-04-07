@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>生日快乐</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: linear-gradient(to bottom, #ffd6e7 0%, #ffeef5 45%, #fff9d6 100%);
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    .pixel-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.45;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.25) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.25) 1px, transparent 1px);
+      background-size: 24px 24px;
+      z-index: 0;
+    }
+
+    .floating {
+      position: absolute;
+      font-size: 28px;
+      animation: floatUp linear infinite;
+      opacity: 0.9;
+    }
+
+    @keyframes floatUp {
+      from {
+        transform: translateY(30px);
+        opacity: 0;
+      }
+      15% {
+        opacity: 1;
+      }
+      to {
+        transform: translateY(-120vh);
+        opacity: 0;
+      }
+    }
+
+    .wrap {
+      position: relative;
+      z-index: 2;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 20px 80px;
+    }
+
+    .card {
+      max-width: 700px;
+      margin: 30px auto 24px;
+      text-align: center;
+      background: #fffafc;
+      border: 4px solid #ff9cc2;
+      box-shadow: 10px 10px 0 #ffc4db;
+      border-radius: 18px;
+      padding: 30px 24px;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: 42px;
+      color: #ff4f93;
+      letter-spacing: 2px;
+    }
+
+    .subtitle {
+      font-size: 18px;
+      color: #9a5b75;
+      margin-bottom: 14px;
+    }
+
+    .message {
+      font-size: 20px;
+      color: #6d4c5b;
+      line-height: 1.8;
+    }
+
+    .music-btn {
+      margin-top: 18px;
+      border: none;
+      background: #ff7eb3;
+      color: white;
+      padding: 12px 20px;
+      font-size: 16px;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 4px 4px 0 #e25b93;
+    }
+
+    .editor-box {
+      margin: 26px auto 0;
+      max-width: 760px;
+      background: #fffef7;
+      border: 4px solid #ffd36b;
+      box-shadow: 10px 10px 0 #ffe79d;
+      border-radius: 18px;
+      padding: 24px;
+    }
+
+    .editor-title {
+      text-align: center;
+      font-size: 24px;
+      color: #d78b00;
+      margin-bottom: 8px;
+    }
+
+    .editor-note {
+      text-align: center;
+      color: #8c6a2c;
+      margin-bottom: 18px;
+      font-size: 15px;
+    }
+
+    .tools {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .tools button,
+    .tools input {
+      font-size: 15px;
+    }
+
+    .tools button {
+      border: none;
+      background: #8ed1fc;
+      color: #234;
+      padding: 10px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 3px 3px 0 #62b8ef;
+    }
+
+    .tools button.erase {
+      background: #ffb3c7;
+      box-shadow: 3px 3px 0 #ef8aa7;
+    }
+
+    .tools button.clear {
+      background: #cdb4ff;
+      box-shadow: 3px 3px 0 #aa8ff0;
+    }
+
+    .tools button.stamp {
+      background: #b8f2c8;
+      box-shadow: 3px 3px 0 #8ed7a3;
+    }
+
+    #colorPicker {
+      width: 54px;
+      height: 42px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .pixel-editor {
+      display: grid;
+      grid-template-columns: repeat(16, 22px);
+      grid-template-rows: repeat(16, 22px);
+      gap: 2px;
+      justify-content: center;
+      margin: 0 auto;
+      user-select: none;
+      touch-action: none;
+    }
+
+    .pixel {
+      width: 22px;
+      height: 22px;
+      background: white;
+      border: 1px solid #f0dce4;
+    }
+
+    .gallery {
+      margin-top: 24px;
+      text-align: center;
+    }
+
+    .gallery-title {
+      color: #7a5972;
+      margin-bottom: 12px;
+    }
+
+    .saved-art {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .mini-art {
+      width: 128px;
+      height: 128px;
+      border: 4px solid #ffb7d1;
+      background: #fff;
+      image-rendering: pixelated;
+      box-shadow: 6px 6px 0 #ffd5e4;
+      border-radius: 10px;
+    }
+
+    @media (max-width: 640px) {
+      h1 {
+        font-size: 32px;
+      }
+
+      .message {
+        font-size: 17px;
+      }
+
+      .pixel-editor {
+        grid-template-columns: repeat(16, 18px);
+        grid-template-rows: repeat(16, 18px);
+      }
+
+      .pixel {
+        width: 18px;
+        height: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="pixel-bg"></div>
+
+  <div class="wrap">
+    <div class="card">
+      <h1>🎂 生日快樂！</h1>
+      <div class="message">
+        親愛的<span id="friendName">包包蟲</span><br>
+        希望你每天都很開心，有很多好吃的可以吃，<br>
+        青春永駐，身體健康 ✨
+      </div>
+      <button class="music-btn" onclick="toggleMusic()">🎵 点这里播放 / 暂停音乐</button>
+    </div>
+
+    <div class="editor-box">
+      <div class="editor-title">像素小画板</div>
+      <div class="editor-note">
+        你可以自己画爱心、蛋糕、星星这些小图。画完点“保存到下方”，就能在下方看到你画的图哦！<br>
+      </div>
+
+      <div class="tools">
+        <input type="color" id="colorPicker" value="#ff5fa2" />
+        <button onclick="setMode('draw')">画笔</button>
+        <button class="erase" onclick="setMode('erase')">橡皮擦</button>
+        <button class="clear" onclick="clearBoard()">清空</button>
+        <button onclick="saveArt()">保存到下方</button>
+      </div>
+
+      <div class="pixel-editor" id="pixelEditor"></div>
+
+      <div class="gallery">
+        <div class="gallery-title">你画好的像素图</div>
+        <div class="saved-art" id="savedArt"></div>
+      </div>
+    </div>
+  </div>
+
+  <audio id="bgMusic" loop>
+    <source src="pighappybirthday.mp3" type="audio/mpeg" />
+  </audio>
+
+  <script>
+    const editor = document.getElementById("pixelEditor");
+    const colorPicker = document.getElementById("colorPicker");
+    const savedArt = document.getElementById("savedArt");
+    const size = 16;
+    let mode = "draw";
+    let drawing = false;
+    const cells = [];
+
+    function createBoard() {
+      for (let i = 0; i < size * size; i++) {
+        const cell = document.createElement("div");
+        cell.className = "pixel";
+
+        cell.addEventListener("mousedown", () => {
+          drawing = true;
+          paint(cell);
+        });
+
+        cell.addEventListener("mouseenter", () => {
+          if (drawing) paint(cell);
+        });
+
+        cell.addEventListener("touchstart", (e) => {
+          e.preventDefault();
+          paint(cell);
+        }, { passive: false });
+
+        editor.appendChild(cell);
+        cells.push(cell);
+      }
+    }
+
+    function paint(cell) {
+      if (mode === "draw") {
+        cell.style.background = colorPicker.value;
+      } else {
+        cell.style.background = "#ffffff";
+      }
+    }
+
+    function setMode(newMode) {
+      mode = newMode;
+    }
+
+    function clearBoard() {
+      cells.forEach(cell => cell.style.background = "#ffffff");
+    }
+
+    document.body.addEventListener("mouseup", () => {
+      drawing = false;
+    });
+
+    function drawPattern(pattern, colorMap) {
+      clearBoard();
+      pattern.forEach((row, y) => {
+        row.forEach((v, x) => {
+          if (v !== 0) {
+            const idx = y * size + x;
+            cells[idx].style.background = colorMap[v];
+          }
+        });
+      });
+    }
+
+    function getBoardData() {
+      return cells.map(c => c.style.background || "#ffffff");
+    }
+
+    function saveArt() {
+      const data = getBoardData();
+      const canvas = document.createElement("canvas");
+      const scale = 8;
+      canvas.width = size * scale;
+      canvas.height = size * scale;
+      const ctx = canvas.getContext("2d");
+
+      for (let y = 0; y < size; y++) {
+        for (let x = 0; x < size; x++) {
+          const color = data[y * size + x] || "#ffffff";
+          ctx.fillStyle = color;
+          ctx.fillRect(x * scale, y * scale, scale, scale);
+        }
+      }
+
+      const img = document.createElement("img");
+      img.src = canvas.toDataURL("image/png");
+      img.className = "mini-art";
+      savedArt.prepend(img);
+    }
+
+    function toggleMusic() {
+      const music = document.getElementById("bgMusic");
+      if (music.paused) {
+        music.play();
+      } else {
+        music.pause();
+      }
+    }
+
+    function createFloatingEmoji() {
+      const icons = ["💖", "⭐", "🧁", "🎂", "🍓", "☁️"];
+      const item = document.createElement("div");
+      item.className = "floating";
+      item.innerText = icons[Math.floor(Math.random() * icons.length)];
+      item.style.left = Math.random() * 100 + "vw";
+      item.style.animationDuration = (5 + Math.random() * 6) + "s";
+      item.style.fontSize = (20 + Math.random() * 20) + "px";
+      document.body.appendChild(item);
+
+      setTimeout(() => item.remove(), 12000);
+    }
+
+    createBoard();
+    setInterval(createFloatingEmoji, 800);
+  </script>
+</body>
+</html>
